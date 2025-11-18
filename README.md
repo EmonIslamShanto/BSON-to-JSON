@@ -8,6 +8,7 @@ A simple web application that converts BSON (Binary JSON) files to JSON format. 
 - 🔄 Automatic conversion from BSON to JSON
 - 📊 Support for multiple BSON documents in a single file
 - 🚀 Simple and lightweight
+- ☁️ Serverless-ready (uses in-memory file handling for Vercel)
 
 ## Tech Stack
 

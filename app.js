@@ -1,13 +1,14 @@
 // app.js
 const express = require("express");
 const multer = require("multer");
-const fs = require("fs");
 const { BSON } = require("bson");
 
 const app = express();
 const port = 3000;
 
-const upload = multer({ dest: "uploads/" });
+// Use memory storage for Vercel (serverless environments don't allow disk writes)
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // Function to parse multiple BSON documents from a file
 function parseBSONFile(buffer) {
@@ -35,19 +36,14 @@ function parseBSONFile(buffer) {
 
 app.post("/upload", upload.single("bsonFile"), (req, res) => {
   try {
-    const bsonFilePath = req.file.path;
-
-    // Read BSON file
-    const bsonData = fs.readFileSync(bsonFilePath);
+    // File is now in memory buffer instead of disk
+    const bsonData = req.file.buffer;
 
     // Parse BSON (multiple docs)
     const jsonData = parseBSONFile(bsonData);
 
     // Convert to JSON string
     const jsonString = JSON.stringify(jsonData, null, 2);
-
-    // Remove uploaded file
-    fs.unlinkSync(bsonFilePath);
 
     // Send JSON response
     res.setHeader("Content-Type", "application/json");
